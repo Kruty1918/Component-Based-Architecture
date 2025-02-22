@@ -5,26 +5,50 @@ namespace SGS29.ComponentBasedArchitecture
 {
     /// <summary>
     /// Базовий клас для контролера, що працює як MonoBehaviour.
+    /// Цей клас забезпечує основні функції для роботи з групами компонентів та їх обробниками.
     /// </summary>
+    /// <typeparam name="B">Тип компонента, який обробляється контролером, що реалізує <see cref="IComponentHandler{V}"/>.</typeparam>
+    /// <typeparam name="V">Тип значення, яке обробляється компонентами.</typeparam>
     public abstract class AbstractMonoController<B, V> : MonoBehaviour, IController<B, V>
         where B : IComponentHandler<V>
     {
         /// <summary>
         /// Назва контролера.
         /// Використовується для ідентифікації конкретного контролера.
-        /// За замовчуванням повертає ім'я класу, але може бути перекрите.
+        /// За замовчуванням повертає ім'я класу, але може бути перекрите у нащадках.
         /// </summary>
         public virtual string Name => GetType().Name;
 
         /// <summary>
         /// Колекція груп компонентів, якими керує цей контролер.
+        /// Цей список повертається через метод <see cref="GetGroups"/>.
         /// </summary>
-        IEnumerable<IComponentGroup<B, V>> IController<B, V>.Groups => GetGroups();
+        public IEnumerable<IComponentGroup<B, V>> Groups => GetGroups();
 
         /// <summary>
-        /// Метод, який має повертати групи компонентів.
+        /// Метод, який має повертати групи компонентів, якими керує контролер.
+        /// Цей метод необхідно реалізувати у нащадках для визначення конкретних груп компонентів.
         /// </summary>
-        /// <returns>Перелік груп компонентів.</returns>
+        /// <returns>
+        /// Перелік груп компонентів, які контролер має обробляти.
+        /// </returns>
         protected abstract IEnumerable<IComponentGroup<B, V>> GetGroups();
+
+        /// <summary>
+        /// Встановлює залежності для всіх груп компонентів, якими керує цей контролер.
+        /// Цей метод ітерує через всі групи і передає їм загальний набір залежностей.
+        /// </summary>
+        /// <param name="dependencies">
+        /// Словник залежностей, де ключем є назва залежності (як рядок),
+        /// а значенням — об'єкт, що представляє залежність (наприклад, інші компоненти або сервіси).
+        /// </param>
+        protected void SetComponentsDependencies(Dictionary<string, object> dependencies)
+        {
+            // Ітеруємо через всі групи компонентів та ініціалізуємо їх залежності
+            foreach (var group in Groups)
+            {
+                group.SetDependencies(dependencies);
+            }
+        }
     }
 }

@@ -6,11 +6,8 @@ namespace SGS29.ComponentBasedArchitecture.Example
     /// <summary>
     /// Контролер гравця, який обробляє компоненти та керує їхньою взаємодією.
     /// </summary>
-    public class PlayerController : MonoBehaviour, IController<ComponentBase, Vector2>
+    public class PlayerController : AbstractMonoController<ComponentBase, Vector2>
     {
-        [SerializeField, Tooltip("Ім'я контролеру")]
-        private string _controllerName;
-
         [SerializeField, Tooltip("Список груп компонентів, які взаємодіють із контролером")]
         private List<GroupBase> _componentGroups;
 
@@ -18,18 +15,6 @@ namespace SGS29.ComponentBasedArchitecture.Example
         /// Поточна швидкість гравця.
         /// </summary>
         public Vector2 Velocity { get; private set; }
-
-        /// <summary>
-        /// Ім'я контролеру.
-        /// </summary>
-        public string Name => _controllerName;
-
-        /// <summary>
-        /// Колекція груп компонентів, які керують логікою гравця.
-        /// </summary>
-        private IEnumerable<IComponentGroup<ComponentBase, Vector2>> Groups => _componentGroups;
-
-        IEnumerable<IComponentGroup<ComponentBase, Vector2>> IController<ComponentBase, Vector2>.Groups => Groups;
 
         private void FixedUpdate()
         {
@@ -55,6 +40,11 @@ namespace SGS29.ComponentBasedArchitecture.Example
         private void MovePlayer()
         {
             transform.position += new Vector3(Velocity.x, 0, Velocity.y) * Time.fixedDeltaTime;
+        }
+
+        protected override IEnumerable<IComponentGroup<ComponentBase, Vector2>> GetGroups()
+        {
+            return _componentGroups;
         }
     }
 }
