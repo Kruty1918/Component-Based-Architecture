@@ -8,13 +8,21 @@ namespace SGS29.ComponentBasedArchitecture.Example
     /// </summary>
     public class PlayerController : AbstractMonoController<ComponentBase, Vector2>
     {
+        [SerializeReference] private ComponentFilter filter;
+
         [SerializeField, Tooltip("Список груп компонентів, які взаємодіють із контролером")]
         private List<GroupBase> _componentGroups;
+        private List<GroupBase> filterComponentGroups;
 
         /// <summary>
         /// Поточна швидкість гравця.
         /// </summary>
         public Vector2 Velocity { get; private set; }
+
+        void Start()
+        {
+            filterComponentGroups = filter.Apply(_componentGroups);
+        }
 
         private void FixedUpdate()
         {
@@ -44,7 +52,7 @@ namespace SGS29.ComponentBasedArchitecture.Example
 
         protected override IEnumerable<IComponentGroup<ComponentBase, Vector2>> GetGroups()
         {
-            return _componentGroups;
+            return filterComponentGroups;
         }
     }
 }
