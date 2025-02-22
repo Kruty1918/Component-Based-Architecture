@@ -440,9 +440,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e94c188637e9bc42ad0cbbdc2dff793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  componentGroups:
+  _componentGroups:
   - {fileID: 510383305}
-  Velocity: {x: 0, y: 0}
 --- !u!65 &510383307
 BoxCollider:
   m_ObjectHideFlags: 0
