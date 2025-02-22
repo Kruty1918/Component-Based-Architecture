@@ -1,16 +1,22 @@
 using System.Collections.Generic;
 
-namespace GlowspireGames.ComponentBasedArchitecture
+namespace SGS29.ComponentBasedArchitecture
 {
     /// <summary>
-    /// Інтерфейс контролера, який містить групи компонентів.
+    /// Загальний інтерфейс контролера, що містить групи компонентів.
+    /// Використовується для керування взаємодією між компонентами через групи.
     /// </summary>
-    /// <typeparam name="B">Тип компонента, що реалізує IComponentHandler&lt;V&gt;.</typeparam>
+    /// <typeparam name="B">Тип компонента, який реалізує <see cref="IComponentHandler{V}"/>.</typeparam>
     /// <typeparam name="V">Тип значення, що обробляється компонентом.</typeparam>
     public interface IController<B, V> where B : IComponentHandler<V>
     {
         /// <summary>
-        /// Колекція груп компонентів, що керуються цим контролером.
+        /// Назва контролера.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Колекція груп компонентів, якими керує цей контролер.
         /// </summary>
         IEnumerable<IComponentGroup<B, V>> Groups { get; }
     }
