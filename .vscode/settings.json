@@ -56,5 +56,8 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Component-Based-Architecture.sln"
+    "dotnet.defaultSolution": "Component-Based-Architecture.sln",
+    "cSpell.words": [
+        "CBADATA"
+    ]
 }
