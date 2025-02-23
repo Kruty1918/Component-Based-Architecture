@@ -4,13 +4,14 @@ using System.Linq;
 using SGS29.ComponentBasedArchitecture.Example;
 using UnityEngine;
 
+
 namespace SGS29.ComponentBasedArchitecture
 {
     [CreateAssetMenu(fileName = "NewComponentFilter", menuName = "SGS29/ComponentBasedArchitecture/ComponentFilter")]
     public class ComponentFilter : ScriptableObject
     {
         [SerializeField, Tooltip("Список правил фільтрації з їхніми пріоритетами")]
-        private List<FilterRule> _rules = new();
+        private List<FilterRule> _rules;
 
         private readonly List<GroupBase> _cachedFilteredGroups = new();
         private List<GroupBase> _lastInputList;
@@ -55,13 +56,7 @@ namespace SGS29.ComponentBasedArchitecture
     [Serializable]
     public class FilterRule
     {
-        [SerializeField, Tooltip("Назва правила")]
-        private string groupName;
-
-        [SerializeField, Tooltip("Пріоритет застосування (менше значення – раніше застосовується)")]
-        private int priority;
-
-        public string GroupName => groupName;
-        public int Priority => priority;
+        public string GroupName;
+        public int Priority;
     }
 }
