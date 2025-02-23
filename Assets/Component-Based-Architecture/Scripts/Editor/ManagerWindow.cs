@@ -9,8 +9,7 @@ namespace SGS29.Editor
         private static ManagerWindow instance;
         private Vector2 scrollPosition;
         private List<ControllerNode> controllers = new List<ControllerNode>();
-        private static Dictionary<ControllerNode, bool> controllerFoldoutStates = new Dictionary<ControllerNode, bool>();
-        private static Dictionary<GroupNode, bool> groupFoldoutStates = new Dictionary<GroupNode, bool>();
+        private static Dictionary<object, bool> foldoutStates = new Dictionary<object, bool>();
         private const float treeWidth = 350;
 
         [SettingsProvider]
@@ -74,12 +73,12 @@ namespace SGS29.Editor
 
             EditorGUILayout.BeginVertical(boxStyle, GUILayout.Width(treeWidth));
 
-            if (!controllerFoldoutStates.ContainsKey(controller))
-                controllerFoldoutStates[controller] = true;
+            if (!foldoutStates.ContainsKey(controller))
+                foldoutStates[controller] = true;
 
-            controllerFoldoutStates[controller] = EditorGUI.Foldout(EditorGUILayout.GetControlRect(), controllerFoldoutStates[controller], controller.controllerName, true, foldoutStyle);
+            foldoutStates[controller] = EditorGUI.Foldout(EditorGUILayout.GetControlRect(), foldoutStates[controller], controller.controllerName, true, foldoutStyle);
 
-            if (controllerFoldoutStates[controller])
+            if (foldoutStates[controller])
             {
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Label("Name", GUILayout.Width(50));
@@ -98,25 +97,30 @@ namespace SGS29.Editor
         private void DrawGroup(GroupNode group)
         {
             DrawLine();
+            // Відступи та розміри
             float rightMargin = 20f;
             float labelWidth = 40f;
             float inputWidth = 200f;
-            float totalWidth = treeWidth - 50;
+            float totalWidth = treeWidth - 50; // Враховуємо відступи
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(rightMargin);
 
+            // Стиль для заголовку групи
             GUIStyle groupStyle = UIStyles.ItalicFoldoutStyle();
 
             EditorGUILayout.BeginVertical("box", GUILayout.Width(totalWidth));
 
-            if (!groupFoldoutStates.ContainsKey(group))
-                groupFoldoutStates[group] = true;
+            // Якщо стан розкриття для групи ще не збережено – встановлюємо true
+            if (!foldoutStates.ContainsKey(group))
+                foldoutStates[group] = true;
 
-            groupFoldoutStates[group] = EditorGUI.Foldout(EditorGUILayout.GetControlRect(), groupFoldoutStates[group], group.groupName, true, groupStyle);
+            // Заголовок групи з можливістю розкриття
+            foldoutStates[group] = EditorGUI.Foldout(EditorGUILayout.GetControlRect(), foldoutStates[group], group.groupName, true, groupStyle);
 
-            if (groupFoldoutStates[group])
+            if (foldoutStates[group])
             {
+                // Рядок редагування назви групи
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(10);
                 GUILayout.Label("Name", GUILayout.Width(labelWidth));
@@ -124,63 +128,80 @@ namespace SGS29.Editor
                 EditorGUILayout.EndHorizontal();
 
                 float buttonSize = 20;
+
+                // Стиль для кнопки без фону
                 GUIStyle iconButtonStyle = new GUIStyle(GUI.skin.button)
                 {
-                    normal = { background = UIStyles.MakeTex((int)buttonSize, (int)buttonSize, Color.clear) },
-                    focused = { background = null },
-                    hover = { background = null },
-                    active = { background = null },
-                    padding = new RectOffset(0, 0, 0, 0),
-                    margin = new RectOffset(0, 0, 0, 0),
-                    alignment = TextAnchor.MiddleCenter
+                    normal = { background = UIStyles.MakeTex((int)buttonSize, (int)buttonSize, Color.clear) },  // Прибираємо фон кнопки, встановлюємо колір тексту
+                    focused = { background = null }, // Прибираємо фон при фокусі
+                    hover = { background = null },   // Прибираємо фон при наведенні
+                    active = { background = null },  // Прибираємо фон при натисканні
+                    padding = new RectOffset(0, 0, 0, 0),  // Вимикаємо відступи
+                    margin = new RectOffset(0, 0, 0, 0),   // Вимикаємо маргін
+                    alignment = TextAnchor.MiddleCenter // Вирівнюємо іконку по центру
                 };
 
+                // Відображення списку компонентів – для кожного компоненту текст і кнопка видалення в одному рядку
                 for (int i = 0; i < group.components.Count; i++)
                 {
                     EditorGUILayout.BeginHorizontal();
                     GUILayout.Space(rightMargin);
+                    // Розраховуємо ширину для тексту (віднімаємо місце під кнопку)
                     float textWidth = inputWidth - 60;
                     EditorGUILayout.LabelField("- " + group.components[i], GUILayout.Width(textWidth));
                     EditorGUILayout.EndHorizontal();
                 }
+
                 DrawLine();
 
+                // Відображення кнопок в одному рядку: видалення зліва і додавання праворуч
                 EditorGUILayout.BeginHorizontal();
+
+                // Відступ для вирівнювання
                 GUILayout.Space(rightMargin);
 
                 if (group.components.Count > 0)
                 {
+                    // Кнопка видалення для цього компоненту (іконка без фону)
                     GUIContent removeIcon = EditorGUIUtility.IconContent("d_Collab.FileDeleted");
                     if (GUILayout.Button(removeIcon, iconButtonStyle, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
                     {
                         group.components.Remove(group.components[^1]);
+                        // Після видалення список змінюється, можна припинити виконання
                     }
                 }
 
+                // Кнопка додавання нового компоненту (іконка додавання поруч із кнопкою видалення)
                 GUIContent addIcon = EditorGUIUtility.IconContent("d_Collab.FileAdded");
                 if (GUILayout.Button(addIcon, iconButtonStyle, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
                 {
                     group.components.Add("New Component");
                 }
 
-                EditorGUILayout.EndHorizontal();
-
+                // Завершення горизонтального контейнера
                 EditorGUILayout.EndHorizontal();
             }
 
             EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawLine(float width = 0, float height = 0.5f)
         {
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
-            float lineWidth = width == 0 ? treeWidth : width;
-            Rect rect = GUILayoutUtility.GetRect(lineWidth, height);
+
+            // Визначаємо ширину лінії, якщо не вказано, використовуємо доступну ширину
+            float lineWidth = width == 0 ? treeWidth : width; // використовуємо treeWidth як ширину за замовчуванням
+
+            // Створюємо область для лінії з вказаними шириною та висотою
+            Rect rect = GUILayoutUtility.GetRect(lineWidth, height); // Додаємо параметр ширини
             Color lighterColor = Color.Lerp(UIStyles.BOX_COLOR, Color.white, 0.12f);
-            EditorGUI.DrawRect(rect, lighterColor);
+
+            EditorGUI.DrawRect(rect, lighterColor); // Малюємо чорну лінію
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(5);
         }
+
     }
 }

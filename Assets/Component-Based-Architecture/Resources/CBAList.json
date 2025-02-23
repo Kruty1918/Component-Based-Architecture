@@ -4,17 +4,12 @@
             "controllerName": "MainController",
             "groups": [
                 {
-                    "groupName": "Group 1f",
-                    "components": [
-                        "Component1",
-                        "Component2"
-                    ]
+                    "groupName": "Group 1",
+                    "components": []
                 },
                 {
                     "groupName": "Group 2",
                     "components": [
-                        "New Component",
-                        "New Component",
                         "New Component",
                         "New Component"
                     ]
