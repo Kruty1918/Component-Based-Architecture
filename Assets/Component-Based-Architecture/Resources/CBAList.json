@@ -5,7 +5,17 @@
             "groups": [
                 {
                     "groupName": "Group 1",
-                    "components": []
+                    "components": [
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component"
+                    ]
                 },
                 {
                     "groupName": "Group 2",
@@ -13,6 +23,10 @@
                         "New Component",
                         "New Component"
                     ]
+                },
+                {
+                    "groupName": "",
+                    "components": []
                 }
             ]
         }

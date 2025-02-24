@@ -13,5 +13,9 @@ MonoBehaviour:
   m_Name: ComponentFilter
   m_EditorClassIdentifier: 
   _rules:
-  - groupName: GroupBase
-    priority: 1
+  - GroupName: 
+    Priority: 0
+  - GroupName: GroupBase
+    Priority: 0
+  - GroupName: GroupBase
+    Priority: 0
