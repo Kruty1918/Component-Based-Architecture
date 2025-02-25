@@ -13,6 +13,9 @@ namespace SGS29.Editor
         private ICBADataProvider<List<ControllerNode>> provider;
         private IFoldout foldout;
 
+        // Flag to indicate that there are unsaved changes.
+        private bool _hasChanges = false;
+
         [SettingsProvider]
         public static SettingsProvider CreateComponentBaseArchitectureSettings()
         {
@@ -35,6 +38,7 @@ namespace SGS29.Editor
             provider = new CBADataProvider();
             foldout = new FoldoutManager();
             controllers = provider.Load();
+            _hasChanges = false;
         }
 
         private void OnGUI()
@@ -43,7 +47,7 @@ namespace SGS29.Editor
 
             DrawHeader("Controllers");
 
-            // Display list of controllers
+            // Display list of controllers.
             for (int i = 0; i < controllers.Count; i++)
             {
                 bool toggle = i % 2 == 0;
@@ -55,6 +59,7 @@ namespace SGS29.Editor
                 controllers,
                 () =>
                 {
+                    _hasChanges = true;
                     // Create a new controller with a unique name.
                     var newController = new ControllerNode
                     {
@@ -81,12 +86,16 @@ namespace SGS29.Editor
                     return newController;
                 });
 
-
             EditorGUILayout.EndVertical();
 
-            if (GUILayout.Button("Save"))
+            // Display the Save button only if there are unsaved changes.
+            if (_hasChanges)
             {
-                provider.Save(controllers);
+                if (GUILayout.Button("Save"))
+                {
+                    provider.Save(controllers);
+                    _hasChanges = false;
+                }
             }
         }
 
@@ -106,12 +115,17 @@ namespace SGS29.Editor
                     EditorGUI.indentLevel++;
 
                     // Validate the controller name for uniqueness across all controllers.
-                    controller.controllerName = DrawValidatedTextField(
+                    string updatedName = DrawValidatedTextField(
                         controller.controllerName,
                         newName => !controllers.Any(c => c != controller && c.controllerName == newName),
                         "Error",
                         "This controller name already exists."
                     );
+                    if (updatedName != controller.controllerName)
+                    {
+                        controller.controllerName = updatedName;
+                        _hasChanges = true;
+                    }
 
                     // Draw each group within the controller.
                     for (int i = 0; i < controller.groups.Count; i++)
@@ -134,12 +148,17 @@ namespace SGS29.Editor
                     EditorGUI.indentLevel++;
 
                     // Validate the group name within the current controller.
-                    group.groupName = DrawValidatedTextField(
+                    string updatedGroupName = DrawValidatedTextField(
                         group.groupName,
                         newName => !controller.groups.Any(g => g != group && g.groupName == newName),
                         "Error",
                         "This group name already exists in this controller."
                     );
+                    if (updatedGroupName != group.groupName)
+                    {
+                        group.groupName = updatedGroupName;
+                        _hasChanges = true;
+                    }
 
                     // Draw each component in the group.
                     for (int i = 0; i < group.components.Count; i++)
@@ -148,21 +167,29 @@ namespace SGS29.Editor
                         DrawBackground(compToggle, () => DrawComponent(group.components[i], group, compToggle));
                     }
 
-                    // Use NamesValidator to generate a unique component name when adding new ones.
+                    // When adding a new component, mark changes and generate a unique component name.
                     GUIX.DrawListButtons(
                         group.components,
-                        () => new ComponentNode
+                        () =>
                         {
-                            componentName = GetUniqueComponentName(group)
+                            _hasChanges = true;
+                            return new ComponentNode
+                            {
+                                componentName = GetUniqueComponentName(group)
+                            };
                         });
 
-                    // Use NamesValidator to generate a unique group name for new additions.
+                    // When adding a new group, mark changes and generate a unique group name.
                     GUIX.DrawListButtons(
                         controller.groups,
-                        () => new GroupNode
+                        () =>
                         {
-                            groupName = GetUniqueGroupName(controller),
-                            components = new List<ComponentNode>()
+                            _hasChanges = true;
+                            return new GroupNode
+                            {
+                                groupName = GetUniqueGroupName(controller),
+                                components = new List<ComponentNode>()
+                            };
                         });
 
                     EditorGUI.indentLevel--;
@@ -177,12 +204,17 @@ namespace SGS29.Editor
                 foldout.Draw(component.componentName, component.componentName, () =>
                 {
                     // Validate the component name within the group.
-                    component.componentName = DrawValidatedTextField(
+                    string updatedComponentName = DrawValidatedTextField(
                         component.componentName,
                         newName => !group.components.Any(c => c != component && c.componentName == newName),
                         "Error",
                         "This component name already exists in this group."
                     );
+                    if (updatedComponentName != component.componentName)
+                    {
+                        component.componentName = updatedComponentName;
+                        _hasChanges = true;
+                    }
                 });
             });
         }
@@ -206,6 +238,10 @@ namespace SGS29.Editor
                     EditorUtility.DisplayDialog(errorTitle, errorMessage, "OK");
                     return currentValue;
                 }
+                if (!newValue.Equals(currentValue))
+                {
+                    _hasChanges = true;
+                }
                 return newValue;
             }
             return currentValue;
@@ -222,7 +258,6 @@ namespace SGS29.Editor
             multiplier = toggle ? multiplier : multiplier * 3.8f;
             Color backgroundColor = Color.Lerp(baseColor, targetColor, multiplier);
 
-            // Retrieve the rect for the vertical layout, then draw the background.
             Rect rect = EditorGUILayout.BeginVertical();
             EditorGUI.DrawRect(rect, backgroundColor);
             content?.Invoke();
