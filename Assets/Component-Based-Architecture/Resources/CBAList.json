@@ -10,10 +10,6 @@
                         "New Component",
                         "New Component",
                         "New Component",
-                        "New Component",
-                        "New Component",
-                        "New Component",
-                        "New Component",
                         "New Component"
                     ]
                 },
@@ -25,8 +21,14 @@
                     ]
                 },
                 {
-                    "groupName": "",
-                    "components": []
+                    "groupName": "New Group",
+                    "components": [
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component",
+                        "New Component"
+                    ]
                 }
             ]
         }

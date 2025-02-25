@@ -11,6 +11,7 @@ namespace SGS29.Editor
         private List<ControllerNode> controllers = new List<ControllerNode>();
         private static Dictionary<object, bool> foldoutStates = new Dictionary<object, bool>();
         private const float treeWidth = 350;
+        private static IFoldout foldout;
 
         [SettingsProvider]
         public static SettingsProvider CreateComponentBaseArchitectureSettings()
@@ -22,6 +23,7 @@ namespace SGS29.Editor
                     if (instance == null)
                     {
                         instance = CreateInstance<ManagerWindow>();
+                        foldout = new FoldoutManager();
                         instance.LoadData();
                     }
 
@@ -55,7 +57,7 @@ namespace SGS29.Editor
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
             foreach (var controller in controllers)
             {
-                DrawController(controller);
+                DrawControllers(controller);
             }
             EditorGUILayout.EndScrollView();
 
@@ -66,7 +68,7 @@ namespace SGS29.Editor
             }
         }
 
-        private void DrawController(ControllerNode controller)
+        private void DrawControllers(ControllerNode controller)
         {
             GUIStyle foldoutStyle = UIStyles.BoldFoldoutStyle();
             GUIStyle boxStyle = UIStyles.BoxStyle();
@@ -74,9 +76,7 @@ namespace SGS29.Editor
             EditorGUILayout.BeginVertical(boxStyle, GUILayout.Width(treeWidth));
 
             // Малюємо foldout для контролера
-            foldoutStates[controller] = DrawFoldout(controller, controller.controllerName, foldoutStyle);
-
-            if (foldoutStates[controller])
+            foldout.Draw(controller.controllerName, controller.controllerName, () =>
             {
                 // Рядок для редагування імені контролера
                 controller.controllerName = DrawNameField("Name", controller.controllerName, 50, 200);
@@ -90,7 +90,7 @@ namespace SGS29.Editor
                 GroupNode newNode = new GroupNode();
                 newNode.groupName = "New Group";
                 DrawComponentButtons(controller.groups, () => newNode, indent: 20, buttonSize: 20);
-            }
+            });
 
             EditorGUILayout.EndVertical();
         }
@@ -99,11 +99,10 @@ namespace SGS29.Editor
         {
             DrawLine(); // Розділююча лінія
 
-            // Налаштування відступів та розмірів
             float rightMargin = 20f;
             float labelWidth = 40f;
             float inputWidth = 200f;
-            float totalWidth = treeWidth - 50; // Враховуємо відступи
+            float totalWidth = treeWidth - 50;
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(rightMargin);
@@ -112,22 +111,13 @@ namespace SGS29.Editor
 
             EditorGUILayout.BeginVertical("box", GUILayout.Width(totalWidth));
 
-            // Малюємо foldout для групи
-            foldoutStates[group] = DrawFoldout(group, group.groupName, groupStyle);
-
-            if (foldoutStates[group])
+            foldout.Draw(group.groupName, group.groupName, () =>
             {
-                // Рядок для редагування назви групи з додатковим відступом
                 group.groupName = DrawNameField("Name", group.groupName, labelWidth, inputWidth - rightMargin, extraIndent: 10);
-
-                // Відображення списку компонентів
                 DrawComponentList(group.components, indent: rightMargin, width: inputWidth);
-
                 DrawLine();
-
-                // Відображення кнопок додавання/видалення компонентів
                 DrawComponentButtons(group.components, () => "New Component", indent: rightMargin, buttonSize: 20);
-            }
+            });
 
             EditorGUILayout.EndVertical();
             EditorGUILayout.EndHorizontal();
@@ -137,29 +127,14 @@ namespace SGS29.Editor
         {
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
-
-            // Визначаємо ширину лінії, якщо не вказано, використовуємо доступну ширину
-            float lineWidth = width == 0 ? treeWidth : width; // використовуємо treeWidth як ширину за замовчуванням
-
-            // Створюємо область для лінії з вказаними шириною та висотою
-            Rect rect = GUILayoutUtility.GetRect(lineWidth, height); // Додаємо параметр ширини
+            float lineWidth = width == 0 ? treeWidth : width;
+            Rect rect = GUILayoutUtility.GetRect(lineWidth, height);
             Color lighterColor = Color.Lerp(UIStyles.BOX_COLOR, Color.white, 0.12f);
-
-            EditorGUI.DrawRect(rect, lighterColor); // Малюємо чорну лінію
+            EditorGUI.DrawRect(rect, lighterColor);
             EditorGUILayout.EndHorizontal();
             GUILayout.Space(5);
         }
 
-        // Допоміжний метод для відображення foldout (ініціалізує стан та повертає оновлений)
-        private bool DrawFoldout<T>(T node, string label, GUIStyle style)
-        {
-            if (!foldoutStates.ContainsKey(node))
-                foldoutStates[node] = true;
-
-            return EditorGUI.Foldout(EditorGUILayout.GetControlRect(), foldoutStates[node], label, true, style);
-        }
-
-        // Метод для відображення поля редагування імені
         private string DrawNameField(string label, string value, float labelWidth = 50, float textFieldWidth = 200, float extraIndent = 0)
         {
             EditorGUILayout.BeginHorizontal();
@@ -170,19 +145,17 @@ namespace SGS29.Editor
             return newValue;
         }
 
-        // Метод для відображення списку елементів (універсальний)
         private void DrawComponentList(List<string> components, float indent = 20f, float width = 200f)
         {
             for (int i = 0; i < components.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(indent);
-                components[i] = EditorGUILayout.TextField(components[i], GUILayout.Width(width - 60)); // Тепер можна редагувати імена
+                components[i] = EditorGUILayout.TextField(components[i], GUILayout.Width(width - 60));
                 EditorGUILayout.EndHorizontal();
             }
         }
 
-        // Метод для відображення кнопок додавання/видалення елементів
         private void DrawComponentButtons<T>(List<T> list, System.Func<T> createNewItem, float indent = 20f, float buttonSize = 20f)
         {
             EditorGUILayout.BeginHorizontal();
@@ -195,7 +168,6 @@ namespace SGS29.Editor
                 alignment = TextAnchor.MiddleCenter
             };
 
-            // Видалення останнього елемента, якщо є що видаляти
             if (list.Count > 0)
             {
                 GUIContent removeIcon = EditorGUIUtility.IconContent("d_Collab.FileDeleted");
@@ -205,7 +177,6 @@ namespace SGS29.Editor
                 }
             }
 
-            // Додавання нового елемента
             GUIContent addIcon = EditorGUIUtility.IconContent("d_Collab.FileAdded");
             if (GUILayout.Button(addIcon, iconButtonStyle, GUILayout.Width(buttonSize), GUILayout.Height(buttonSize)))
             {
@@ -213,6 +184,64 @@ namespace SGS29.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+    }
+
+    public interface IFoldout
+    {
+        void Draw(string key, string label, System.Action drawContent);
+        void SetActive(string key, bool active);
+        void Add(string key, bool defaultActive = false);
+        void Remove(string key);
+    }
+
+    public class FoldoutManager : IFoldout
+    {
+        private Dictionary<string, bool> foldoutStates = new Dictionary<string, bool>();
+        private GUIStyle style;
+
+        public FoldoutManager(GUIStyle style = null)
+        {
+            this.style = style ?? EditorStyles.foldout;
+        }
+
+        public void Draw(string key, string label, System.Action drawContent)
+        {
+            if (!foldoutStates.ContainsKey(key))
+                foldoutStates[key] = false;
+
+            foldoutStates[key] = EditorGUILayout.Foldout(foldoutStates[key], label, true, style);
+
+            if (foldoutStates[key])
+            {
+                EditorGUI.indentLevel++;
+                drawContent?.Invoke();
+                EditorGUI.indentLevel--;
+            }
+        }
+
+        public void SetActive(string key, bool active)
+        {
+            if (foldoutStates.ContainsKey(key))
+            {
+                foldoutStates[key] = active;
+            }
+        }
+
+        public void Add(string key, bool defaultActive = false)
+        {
+            if (!foldoutStates.ContainsKey(key))
+            {
+                foldoutStates[key] = defaultActive;
+            }
+        }
+
+        public void Remove(string key)
+        {
+            if (foldoutStates.ContainsKey(key))
+            {
+                foldoutStates.Remove(key);
+            }
         }
     }
 }
