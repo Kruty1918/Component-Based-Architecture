@@ -7,11 +7,9 @@ namespace SGS29.Editor
     public class ManagerWindow : ScriptableObject
     {
         private static ManagerWindow instance;
-        private Vector2 scrollPosition;
         private List<ControllerNode> controllers = new List<ControllerNode>();
-        private const float treeWidth = 350;
-        private IFoldout foldout;
         private ICBADataProvider<List<ControllerNode>> provider;
+        private IFoldout foldout;
 
         [SettingsProvider]
         public static SettingsProvider CreateComponentBaseArchitectureSettings()
@@ -23,127 +21,99 @@ namespace SGS29.Editor
                     if (instance == null)
                     {
                         instance = CreateInstance<ManagerWindow>();
-                        instance.foldout = new FoldoutManager();
-                        instance.provider = new CBADataProvider();
-                        instance.controllers = instance.provider.Load();
+                        instance.Initialize();
                     }
                     instance.OnGUI();
                 }
             };
         }
 
+        private void Initialize()
+        {
+            provider = new CBADataProvider();
+            foldout = new FoldoutManager();
+            controllers = provider.Load();
+        }
+
         private void OnGUI()
         {
-            using (var scroll = new EditorGUILayout.ScrollViewScope(scrollPosition))
-            {
-                scrollPosition = scroll.scrollPosition;
-                DrawControllersList();
-            }
+            EditorGUILayout.BeginVertical();
 
+            // Горизонтальна панель для заголовка
+            EditorGUILayout.BeginHorizontal("toolbar");
+            GUILayout.Label("Controllers");
+            EditorGUILayout.EndHorizontal();
+
+            // Відображення списку контролерів в контейнері "box"
+            EditorGUILayout.BeginVertical("box");
+            foreach (ControllerNode controller in controllers)
+            {
+                DrawCategory(controller);
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndVertical();
+
+            // Кнопка збереження
             if (GUILayout.Button("Save"))
             {
                 provider.Save(controllers);
             }
         }
 
-        private void DrawControllersList()
+        private void DrawCategory(ControllerNode controller)
         {
-            foreach (var controller in controllers)
-            {
-                DrawController(controller);
-            }
+            EditorGUILayout.BeginVertical("box");
 
-            DrawAddGroupController(controllers);
-        }
-
-        private void DrawController(ControllerNode controller)
-        {
-            using (new EditorGUILayout.VerticalScope(UIStyles.BoxStyle(), GUILayout.Width(treeWidth)))
+            // Використовуємо foldout для категорії контролера
+            foldout.Draw(controller.controllerName, controller.controllerName, () =>
             {
-                foldout.Draw(controller.controllerName, controller.controllerName, () =>
+                EditorGUI.indentLevel++; // Збільшуємо відступ для вмісту
+
+                // Редагування назви контролера
+                controller.controllerName = EditorGUILayout.TextField(controller.controllerName);
+
+                // Відображення груп всередині контролера
+                foreach (GroupNode group in controller.groups)
                 {
-                    controller.controllerName = GUIX.DrawNameField("Name", controller.controllerName, 50, 200);
-                    foreach (var group in controller.groups)
-                    {
-                        DrawGroup(group);
-                    }
-                    DrawAddGroupButton(controller.groups);
-                });
-            }
+                    DrawGroup(group);
+                }
+
+                EditorGUI.indentLevel--;
+            });
+
+            EditorGUILayout.EndVertical();
         }
 
         private void DrawGroup(GroupNode group)
         {
-            DrawLine();
+            EditorGUILayout.BeginVertical();
+            GUILayout.Space(10);  // Невеликий відступ перед назвою групи
 
-            using (new EditorGUILayout.HorizontalScope())
+            // Використовуємо foldout для групи
+            foldout.Draw(group.groupName, group.groupName, () =>
             {
-                GUILayout.Space(20);
-                using (new EditorGUILayout.VerticalScope("box", GUILayout.Width(treeWidth - 50)))
+                EditorGUI.indentLevel++; // Збільшуємо відступ для вмісту групи
+
+                // Редагування назви групи
+                group.groupName = EditorGUILayout.TextField(group.groupName);
+
+                // Відображення компонентів всередині групи
+                foreach (ComponentNode component in group.components)
                 {
-                    foldout.Draw(group.groupName, group.groupName, () =>
-                    {
-                        group.groupName = GUIX.DrawNameField("Name", group.groupName, 40, 200, 10);
-                        DrawComponentList(group.components);
-                        DrawLine();
-                        DrawAddGroupComponent(group.components);
-                    });
-                }
-            }
-        }
-
-        private void DrawComponentList(List<string> components)
-        {
-            for (int i = 0; i < components.Count; i++)
-            {
-                string newValue = components[i];
-                DrawComponentField(ref newValue);
-                components[i] = newValue;
-            }
-
-        }
-
-        private void DrawComponentField(ref string component)
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.Space(20);
-                component = EditorGUILayout.TextField(component, GUILayout.Width(200));
-            }
-        }
-
-        private void DrawLine(float width = 0, float height = 0.5f) => GUIX.DrawLine(treeWidth, height, width);
-
-        private void DrawComponentButtons<T>(List<T> list, System.Func<T> createNewItem, float buttonSize = 20f)
-        {
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                GUILayout.Space(20);
-
-                if (list.Count > 0)
-                {
-                    // Використовуємо DrawButtonWithIcon для кнопки видалення
-                    GUIX.DrawButtonWithIcon("d_Collab.FileDeleted", () => list.RemoveAt(list.Count - 1), buttonSize);
+                    DrawComponent(component);
                 }
 
-                // Використовуємо DrawButtonWithIcon для кнопки додавання
-                GUIX.DrawButtonWithIcon("d_Collab.FileAdded", () => list.Add(createNewItem()), buttonSize);
-            }
+                EditorGUI.indentLevel--;
+            });
+
+            EditorGUILayout.EndVertical();
         }
 
-        private void DrawAddGroupController(List<ControllerNode> controllers)
+        public void DrawComponent(ComponentNode component)
         {
-            DrawComponentButtons(controllers, () => new ControllerNode { controllerName = "New Controller" });
-        }
-
-        private void DrawAddGroupButton(List<GroupNode> groups)
-        {
-            DrawComponentButtons(groups, () => new GroupNode { groupName = "New Group" });
-        }
-
-        private void DrawAddGroupComponent(List<string> components)
-        {
-            DrawComponentButtons(components, () => "New Component");
+            // Відображення компонента
+            EditorGUILayout.LabelField(component.componentName);
         }
     }
 }

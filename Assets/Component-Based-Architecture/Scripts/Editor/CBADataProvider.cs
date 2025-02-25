@@ -18,8 +18,7 @@ namespace SGS29.Editor
                         controllerName = "MainController",
                         groups = new List<GroupNode>
                         {
-                            new GroupNode { groupName = "Group 1", components = new List<string> { "Component1", "Component2" } },
-                            new GroupNode { groupName = "Group 2", components = new List<string> { "Component3" } }
+                            new GroupNode { groupName = "Group 1", components = new List<ComponentNode> { new ComponentNode(){componentName = "NewComponent"} } },
                         }
                     }
                 };

@@ -6,39 +6,12 @@
                 {
                     "groupName": "Group 1",
                     "components": [
-                        "New Componentііі",
-                        "New Component",
-                        "New Component",
-                        "New Component",
-                        "New Component"
+                        {
+                            "componentName": "NewComponent"
+                        }
                     ]
-                },
-                {
-                    "groupName": "Group 2",
-                    "components": [
-                        "New Component",
-                        "New Component"
-                    ]
-                },
-                {
-                    "groupName": "New Group1",
-                    "components": [
-                        "New Component",
-                        "New Component",
-                        "New Component",
-                        "New Component",
-                        "New Component"
-                    ]
-                },
-                {
-                    "groupName": "New Group",
-                    "components": []
                 }
             ]
-        },
-        {
-            "controllerName": "New Controller",
-            "groups": []
         }
     ]
 }
