@@ -6,7 +6,7 @@
                 {
                     "groupName": "Group 1",
                     "components": [
-                        "New Component",
+                        "New Componentііі",
                         "New Component",
                         "New Component",
                         "New Component",
@@ -21,7 +21,7 @@
                     ]
                 },
                 {
-                    "groupName": "New Group",
+                    "groupName": "New Group1",
                     "components": [
                         "New Component",
                         "New Component",
@@ -35,6 +35,10 @@
                     "components": []
                 }
             ]
+        },
+        {
+            "controllerName": "New Controller",
+            "groups": []
         }
     ]
 }
