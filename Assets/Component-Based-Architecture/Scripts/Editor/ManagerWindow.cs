@@ -4,40 +4,15 @@ using UnityEngine;
 
 namespace SGS29.Editor
 {
-    public class ManagerWindow : ScriptableObject
+    public class CBADataProvider : ICBADataProvider<List<ControllerNode>>
     {
-        private static ManagerWindow instance;
-        private Vector2 scrollPosition;
-        private List<ControllerNode> controllers = new List<ControllerNode>();
-        private static Dictionary<object, bool> foldoutStates = new Dictionary<object, bool>();
-        private const float treeWidth = 350;
-        private static IFoldout foldout;
-
-        [SettingsProvider]
-        public static SettingsProvider CreateComponentBaseArchitectureSettings()
+        public List<ControllerNode> Load()
         {
-            return new SettingsProvider("Project/Component Base Architecture", SettingsScope.Project)
+            List<ControllerNode> data = new();
+            data = CBAReaderWriter.Read();
+            if (data == null || data.Count == 0)
             {
-                guiHandler = (searchContext) =>
-                {
-                    if (instance == null)
-                    {
-                        instance = CreateInstance<ManagerWindow>();
-                        foldout = new FoldoutManager();
-                        instance.LoadData();
-                    }
-
-                    instance.OnGUI();
-                }
-            };
-        }
-
-        private void LoadData()
-        {
-            controllers = CBAReaderWriter.Read();
-            if (controllers == null || controllers.Count == 0)
-            {
-                controllers = new List<ControllerNode>
+                data = new List<ControllerNode>
                 {
                     new ControllerNode
                     {
@@ -50,6 +25,44 @@ namespace SGS29.Editor
                     }
                 };
             }
+
+            return data;
+        }
+
+        public void Save(List<ControllerNode> data)
+        {
+            CBAReaderWriter.Write(data);
+            AssetDatabase.Refresh();
+        }
+    }
+
+    public class ManagerWindow : ScriptableObject
+    {
+        private static ManagerWindow instance;
+        private Vector2 scrollPosition;
+        private List<ControllerNode> controllers = new List<ControllerNode>();
+        private const float treeWidth = 350;
+        private IFoldout foldout;
+        private ICBADataProvider<List<ControllerNode>> provider;
+
+        [SettingsProvider]
+        public static SettingsProvider CreateComponentBaseArchitectureSettings()
+        {
+            return new SettingsProvider("Project/Component Base Architecture", SettingsScope.Project)
+            {
+                guiHandler = (searchContext) =>
+                {
+                    if (instance == null)
+                    {
+                        instance = CreateInstance<ManagerWindow>();
+                        instance.foldout = new FoldoutManager();
+                        instance.provider = new CBADataProvider();
+                        instance.controllers = instance.provider.Load();
+                    }
+
+                    instance.OnGUI();
+                }
+            };
         }
 
         private void OnGUI()
@@ -63,8 +76,7 @@ namespace SGS29.Editor
 
             if (GUILayout.Button("Save"))
             {
-                CBAReaderWriter.Write(controllers);
-                AssetDatabase.Refresh();
+                provider.Save(controllers);
             }
         }
 
@@ -185,5 +197,11 @@ namespace SGS29.Editor
 
             EditorGUILayout.EndHorizontal();
         }
+    }
+
+    public interface ICBADataProvider<T> where T : List<ControllerNode>
+    {
+        T Load();
+        void Save(T data);
     }
 }

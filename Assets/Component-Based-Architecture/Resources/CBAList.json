@@ -29,6 +29,10 @@
                         "New Component",
                         "New Component"
                     ]
+                },
+                {
+                    "groupName": "New Group",
+                    "components": []
                 }
             ]
         }

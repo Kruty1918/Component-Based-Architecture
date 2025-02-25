@@ -58,6 +58,7 @@
     },
     "dotnet.defaultSolution": "Component-Based-Architecture.sln",
     "cSpell.words": [
-        "CBADATA"
+        "CBADATA",
+        "ICBA"
     ]
 }
