@@ -12,6 +12,19 @@
                     ]
                 }
             ]
+        },
+        {
+            "controllerName": "New Controller 1",
+            "groups": [
+                {
+                    "groupName": "New Group 1",
+                    "components": [
+                        {
+                            "componentName": "New Component 1"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

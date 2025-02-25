@@ -44,7 +44,6 @@ namespace SGS29.ComponentBasedArchitecture
             _cachedFilteredGroups.Clear();
             _cachedFilteredGroups.AddRange(filteredGroups);
 
-            Debug.Log(123);
             return _cachedFilteredGroups;
         }
 
