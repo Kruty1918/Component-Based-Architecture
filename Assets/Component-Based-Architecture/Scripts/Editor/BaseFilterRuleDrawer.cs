@@ -32,6 +32,13 @@ namespace SGS29.Editor
             if (GUI.Button(buttonRect, new GUIContent(buttonLabel, "Оберіть ім'я для правила фільтрації"), EditorStyles.popup))
             {
                 GenericMenu menu = new GenericMenu();
+                menu.AddItem(new GUIContent("None"), false, () =>
+                    {
+                        nameProp.stringValue = null;
+                        nameProp.serializedObject.ApplyModifiedProperties();
+                        nameProp.serializedObject.Update();
+                        UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                    });
                 PopulateMenu(menu, nameProp);
                 menu.ShowAsContext();
             }
@@ -50,7 +57,7 @@ namespace SGS29.Editor
 
             GUI.enabled = hasValidName && isParentValid;
             Rect priorityRect = new Rect(position.x, y, position.width, lineHeight);
-            EditorGUI.PropertyField(priorityRect, priorityProp, new GUIContent("Пріоритет", "Задайте рівень пріоритету для правила"));
+            EditorGUI.PropertyField(priorityRect, priorityProp, new GUIContent("Priority", "Задайте рівень пріоритету для правила"));
             y += lineHeight + spacing;
 
             SerializedProperty iterator = property.Copy();
