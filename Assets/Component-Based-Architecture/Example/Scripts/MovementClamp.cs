@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SGS29.ComponentBasedArchitecture.Example
+namespace SGS29.CBA.Example
 {
     /// <summary>
     /// Компонент, що обмежує максимальну швидкість об'єкта.

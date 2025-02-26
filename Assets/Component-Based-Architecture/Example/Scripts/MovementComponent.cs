@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SGS29.ComponentBasedArchitecture.Example
+namespace SGS29.CBA.Example
 {
     /// <summary>
     /// Компонент для руху, що обробляє введення гравця та повертає напрямок руху.

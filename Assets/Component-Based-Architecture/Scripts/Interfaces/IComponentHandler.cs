@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SGS29.ComponentBasedArchitecture
+namespace SGS29.CBA
 {
     /// <summary>
     /// Загальний інтерфейс для обробників компонентів.

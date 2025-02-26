@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SGS29.ComponentBasedArchitecture
+namespace SGS29.CBA
 {
     /// <summary>
     /// Абстрактний клас для обробників компонентів.

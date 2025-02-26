@@ -1,4 +1,4 @@
-namespace SGS29.ComponentBasedArchitecture
+namespace SGS29.CBA
 {
     /// <summary>
     /// Інтерфейс для об'єктів, які можуть обробляти значення типу <typeparamref name="V"/>.

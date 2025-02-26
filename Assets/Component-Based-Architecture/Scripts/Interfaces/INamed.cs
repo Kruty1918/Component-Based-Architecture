@@ -1,4 +1,4 @@
-namespace SGS29.ComponentBasedArchitecture
+namespace SGS29.CBA
 {
     /// <summary>
     /// Інтерфейс, який забезпечує наявність імені для об'єкта.

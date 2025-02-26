@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SGS29.ComponentBasedArchitecture.Example
+namespace SGS29.CBA.Example
 {
     /// <summary>
     /// Контролер гравця, який обробляє компоненти та керує їхньою взаємодією.
     /// </summary>
     public class PlayerController : AbstractMonoController<ComponentBase, Vector2>
     {
-        [SerializeReference] private ComponentFilter filter;
+        [SerializeReference] private ComponentTypeFilter filter;
 
         [SerializeField, Tooltip("Список груп компонентів, які взаємодіють із контролером")]
         private List<GroupBase> _componentGroups;
@@ -19,10 +19,6 @@ namespace SGS29.ComponentBasedArchitecture.Example
         /// </summary>
         public Vector2 Velocity { get; private set; }
 
-        void Start()
-        {
-            filterComponentGroups = filter.Apply(_componentGroups);
-        }
 
         private void FixedUpdate()
         {

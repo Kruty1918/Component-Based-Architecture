@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SGS29.ComponentBasedArchitecture
+namespace SGS29.CBA
 {
     /// <summary>
     /// Інтерфейс групи компонентів, який містить список компонентів та забезпечує їх обробку.

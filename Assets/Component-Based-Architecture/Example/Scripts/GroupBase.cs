@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SGS29.ComponentBasedArchitecture.Example
+namespace SGS29.CBA.Example
 {
     /// <summary>
     /// Базова група компонентів, що обробляє їх логіку та агрегує результати.

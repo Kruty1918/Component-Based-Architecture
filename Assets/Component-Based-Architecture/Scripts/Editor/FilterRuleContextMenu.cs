@@ -1,6 +1,6 @@
 using UnityEditor;
 using UnityEngine;
-using SGS29.ComponentBasedArchitecture;
+using SGS29.CBA;
 using System.Collections.Generic;
 using System;
 
@@ -14,15 +14,22 @@ namespace SGS29.Editor
         public void Show(SerializedProperty ruleNameProperty)
         {
             GenericMenu menu = new GenericMenu();
-            List<Type> componentGroups = ReflectionHelper.GetAllImplementationsOfGenericInterface(typeof(IComponentGroup<,>));
+            List<string> controllerNames = CBAFilterManager.GetControllerNames();
 
-            foreach (Type type in componentGroups)
+            if (controllerNames.Count == 0)
             {
-                menu.AddItem(new GUIContent(type.Name), type.Name == ruleNameProperty.stringValue, () =>
+                menu.AddDisabledItem(new GUIContent("No controllers available"));
+            }
+            else
+            {
+                foreach (string controllerName in controllerNames)
                 {
-                    ruleNameProperty.stringValue = type.Name;
-                    ruleNameProperty.serializedObject.ApplyModifiedProperties();
-                });
+                    menu.AddItem(new GUIContent(controllerName), controllerName == ruleNameProperty.stringValue, () =>
+                    {
+                        ruleNameProperty.stringValue = controllerName;
+                        ruleNameProperty.serializedObject.ApplyModifiedProperties();
+                    });
+                }
             }
 
             menu.ShowAsContext();
