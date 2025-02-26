@@ -1,76 +1,31 @@
 using UnityEditor;
-using UnityEngine;
 using SGS29.CBA;
-using System.Collections.Generic;
-using System;
+using UnityEngine;
 
 namespace SGS29.Editor
 {
     [CustomPropertyDrawer(typeof(ComponentFilterRule))]
-    public class ComponentFilterRuleDrawer : PropertyDrawer
+    public class ComponentFilterRuleDrawer : BaseFilterRuleDrawer
     {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        protected override string GetNameField()
         {
-            EditorGUI.BeginProperty(position, label, property);
-
-            SerializedProperty nameProperty = property.FindPropertyRelative("Name");
-            SerializedProperty priorityProperty = property.FindPropertyRelative("Priority");
-            SerializedProperty componentProperty = property.FindPropertyRelative("ComponentName");
-
-            float lineHeight = EditorGUIUtility.singleLineHeight;
-            float spacing = 2f;
-            float yOffset = position.y;
-
-            // Назва правила
-            Rect nameRect = new Rect(position.x, yOffset, position.width, lineHeight);
-            EditorGUI.PropertyField(nameRect, nameProperty);
-            yOffset += lineHeight + spacing;
-
-            // Пріоритет
-            Rect priorityRect = new Rect(position.x, yOffset, position.width, lineHeight);
-            EditorGUI.PropertyField(priorityRect, priorityProperty);
-            yOffset += lineHeight + spacing;
-
-            // Контекстне меню для вибору компонента
-            Rect componentRect = new Rect(position.x, yOffset, position.width, lineHeight);
-            if (GUI.Button(componentRect, !string.IsNullOrEmpty(componentProperty.stringValue) ?
-                    componentProperty.stringValue : "Вибрати компонент", EditorStyles.popup))
-            {
-                ShowComponentMenu(componentProperty);
-            }
-
-            EditorGUI.EndProperty();
+            return "ComponentName";
         }
 
-
-        private void ShowComponentMenu(SerializedProperty componentProperty)
+        protected override void PopulateMenu(GenericMenu menu, SerializedProperty nameProperty)
         {
-            GenericMenu menu = new GenericMenu();
-            List<Type> componentTypes = ComponentFinder.GetComponentsImplementingAbstractHandler();
-
-            if (componentTypes.Count > 0)
+            // Наприклад, для цього класу логіка отримання меню може бути іншою
+            // Ми можемо додати свої пункти меню
+            menu.AddItem(new GUIContent("CustomComponent1"), false, () =>
             {
-                foreach (Type type in componentTypes)
-                {
-                    menu.AddItem(new GUIContent(type.Name), false, () =>
-                    {
-                        // Зберігаємо тільки ім'я типу компонента як рядок
-                        componentProperty.stringValue = type.Name;
-                        componentProperty.serializedObject.ApplyModifiedProperties();
-                    });
-                }
-            }
-            else
+                nameProperty.stringValue = "CustomComponent1";
+                nameProperty.serializedObject.ApplyModifiedProperties();
+            });
+            menu.AddItem(new GUIContent("CustomComponent2"), false, () =>
             {
-                menu.AddDisabledItem(new GUIContent("Немає компонентів, що наслідують AbstractComponentHandler"));
-            }
-
-            menu.ShowAsContext();
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return (EditorGUIUtility.singleLineHeight + 2f) * 3;
+                nameProperty.stringValue = "CustomComponent2";
+                nameProperty.serializedObject.ApplyModifiedProperties();
+            });
         }
     }
 }
