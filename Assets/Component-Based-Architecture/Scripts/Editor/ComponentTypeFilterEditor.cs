@@ -8,10 +8,12 @@ namespace SGS29.Editor
     public class ComponentTypeFilterEditor : UnityEditor.Editor
     {
         private SerializedProperty _rulesProperty;
+        private ComponentTypeFilter filter;
 
         private void OnEnable()
         {
             _rulesProperty = serializedObject.FindProperty("rule");
+            filter = (ComponentTypeFilter)target;
         }
 
         public override void OnInspectorGUI()

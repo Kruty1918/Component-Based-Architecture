@@ -181,5 +181,21 @@ namespace SGS29.Editor
 
             EditorGUILayout.EndHorizontal();
         }
+
+        public static void WarningBox(Rect position, ref float y, string message)
+        {
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            Rect warningRect = new Rect(position.x, y, position.width, lineHeight * 2);
+            EditorGUI.HelpBox(warningRect, message, MessageType.Warning);
+            y += lineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
+        }
+
+        public static void ErrorBox(Rect position, ref float y, string message)
+        {
+            float lineHeight = EditorGUIUtility.singleLineHeight;
+            Rect errorRect = new Rect(position.x, y, position.width, lineHeight * 2);
+            EditorGUI.HelpBox(errorRect, message, MessageType.Error);
+            y += lineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
+        }
     }
 }

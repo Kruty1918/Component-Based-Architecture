@@ -14,23 +14,6 @@ namespace SGS29.CBA
             return rule.IsMatch(component);
         }
 
-        // Отримати всі GroupFilterRule
-        public List<GroupFilterRule> GetAllGroupRules()
-        {
-            List<GroupFilterRule> groupRules = new List<GroupFilterRule>();
-            groupRules.AddRange(rule.groups);
-            return groupRules;
-        }
-
-        // Отримати всі ComponentFilterRule
-        public List<ComponentFilterRule> GetAllComponentRules()
-        {
-            List<ComponentFilterRule> componentRules = new List<ComponentFilterRule>();
-            foreach (var group in rule.groups)
-            {
-                componentRules.AddRange(group.components);
-            }
-            return componentRules;
-        }
+        public ControllerFilterRule Get() => rule;
     }
 }
