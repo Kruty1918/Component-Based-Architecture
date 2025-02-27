@@ -21,7 +21,7 @@ namespace SGS29.Editor
 
             if (componentTypes.Count == 0)
             {
-                menu.AddDisabledItem(new GUIContent("No components available"));
+                menu.AddDisabledItem(new GUIContent("Немає доступних компонентів"));
                 return;
             }
 
@@ -34,7 +34,7 @@ namespace SGS29.Editor
             bool addedItem = false;
             foreach (string type in componentTypes)
             {
-                if (controllerComponents.Contains(type))
+                if (CheckBySplit(controllerComponents, type))
                 {
                     menu.AddItem(new GUIContent(type), false, () => ApplySelection(nameProperty, type));
                     addedItem = true;
@@ -43,7 +43,7 @@ namespace SGS29.Editor
 
             if (!addedItem)
             {
-                menu.AddDisabledItem(new GUIContent("No objects matching the filter"));
+                menu.AddDisabledItem(new GUIContent("Немає об'єктів, які відповідають фільтру"));
             }
         }
 
@@ -53,6 +53,18 @@ namespace SGS29.Editor
             nameProperty.serializedObject.ApplyModifiedProperties();
             nameProperty.serializedObject.Update();
             GUIX.ForceRebuild();
+        }
+
+        private bool CheckBySplit(List<string> controllerComponents, string findest)
+        {
+            foreach (var component in controllerComponents)
+            {
+                if (component.EndsWith(findest))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
