@@ -45,58 +45,94 @@ namespace SGS29.Editor
         {
             EditorGUILayout.BeginVertical();
 
+            // Верхній тулбар з кнопками
+            DrawToolbar();
+
             DrawHeader("Controllers");
 
-            // Display list of controllers.
+            // Відображення списку контролерів.
             for (int i = 0; i < controllers.Count; i++)
             {
                 bool toggle = i % 2 == 0;
                 DrawBackground(toggle, () => DrawCategory(controllers[i], toggle));
             }
 
-            // When adding a new controller, generate a unique controller name, add a default group and a default component.
+            // Кнопки для додавання нових контролерів, груп та компонентів.
             GUIX.DrawListButtons(
                 controllers,
                 () =>
                 {
                     _hasChanges = true;
-                    // Create a new controller with a unique name.
                     var newController = new ControllerNode
                     {
                         controllerName = GetUniqueControllerName(),
                         groups = new List<GroupNode>()
                     };
 
-                    // Create a new default group with a unique group name.
                     var newGroup = new GroupNode
                     {
                         groupName = GetUniqueGroupName(newController),
                         components = new List<ComponentNode>()
                     };
 
-                    // Add a default component to the new group using a unique component name.
                     newGroup.components.Add(new ComponentNode
                     {
                         componentName = GetUniqueComponentName(newGroup)
                     });
 
-                    // Add the default group (with its default component) to the new controller.
                     newController.groups.Add(newGroup);
 
                     return newController;
-                });
+                },
+                (ControllerNode node) => { _hasChanges = true; }
+            );
 
             EditorGUILayout.EndVertical();
+        }
 
-            // Display the Save button only if there are unsaved changes.
-            if (_hasChanges)
+        /// <summary>
+        /// Малює верхній тулбар з квадратними кнопками для збереження та скасування змін.
+        /// </summary>
+        private void DrawToolbar()
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            GUILayout.FlexibleSpace(); // Вирівнює кнопки праворуч
+
+            GUIStyle iconSaveButtonStyle = new GUIStyle(GUI.skin.button)
             {
-                if (GUILayout.Button("Save"))
+                fixedWidth = 45,
+                fixedHeight = 18,
+                padding = new RectOffset(2, 2, 2, 2) // Зменшує внутрішні відступи, щоб іконка була більшою
+            };
+
+            GUIStyle iconRevertButtonStyle = new GUIStyle(GUI.skin.button)
+            {
+                fixedWidth = 55,
+                fixedHeight = 18,
+                padding = new RectOffset(2, 2, 2, 2) // Зменшує внутрішні відступи, щоб іконка була більшою
+            };
+
+            GUI.enabled = _hasChanges; // Вмикаємо або вимикаємо кнопки в залежності від змін
+
+            if (GUILayout.Button("Revert", iconRevertButtonStyle))
+            {
+                if (EditorUtility.DisplayDialog("Revert Changes", "Are you sure you want to revert unsaved changes?", "Yes", "No"))
                 {
-                    provider.Save(controllers);
+                    controllers = provider.Load();
                     _hasChanges = false;
                 }
             }
+
+            if (GUILayout.Button("Save", iconSaveButtonStyle))
+            {
+                provider.Save(controllers);
+                _hasChanges = false;
+            }
+
+            GUI.enabled = true; // Повертаємо стандартний стан кнопок
+
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawHeader(string title)
@@ -177,7 +213,7 @@ namespace SGS29.Editor
                             {
                                 componentName = GetUniqueComponentName(group)
                             };
-                        });
+                        }, (ComponentNode node) => { _hasChanges = true; });
 
                     // When adding a new group, mark changes and generate a unique group name.
                     GUIX.DrawListButtons(
@@ -190,7 +226,7 @@ namespace SGS29.Editor
                                 groupName = GetUniqueGroupName(controller),
                                 components = new List<ComponentNode>()
                             };
-                        });
+                        }, (GroupNode node) => { _hasChanges = true; });
 
                     EditorGUI.indentLevel--;
                 });

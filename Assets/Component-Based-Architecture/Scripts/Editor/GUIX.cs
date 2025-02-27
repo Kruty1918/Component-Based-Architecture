@@ -168,8 +168,8 @@ namespace SGS29.Editor
                     T item = list[list.Count - 1];
                     if (onRemove != null)
                         onRemove(item);
-                    else
-                        list.RemoveAt(list.Count - 1);
+
+                    list.RemoveAt(list.Count - 1);
                 }
             });
 

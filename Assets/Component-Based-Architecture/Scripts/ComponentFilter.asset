@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: ComponentFilter
   m_EditorClassIdentifier: 
   rule:
-    Name: 
+    Name: MainController
     Priority: 0
-    groups: []
+    groups:
+    - Name: ComponentBase
+      Priority: 0
+      components:
+      - ComponentName: ComponentBase
+        Priority: 0

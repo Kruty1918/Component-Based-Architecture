@@ -55,32 +55,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "controllerName": "New Controller 4",
-            "groups": [
-                {
-                    "groupName": "New Group 1",
-                    "components": [
-                        {
-                            "componentName": "New Component 1"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "controllerName": "New Controller 5",
-            "groups": [
-                {
-                    "groupName": "New Group 1",
-                    "components": [
-                        {
-                            "componentName": "New Component 1"
-                        }
-                    ]
-                }
-            ]
         }
     ]
 }
