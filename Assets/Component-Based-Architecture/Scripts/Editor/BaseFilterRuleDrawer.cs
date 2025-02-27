@@ -12,6 +12,9 @@ namespace SGS29.Editor
         {
             EditorGUI.BeginProperty(position, label, property);
 
+            // Оновлюємо дані, щоб брати актуальні значення, якщо меню змінило властивості.
+            property.serializedObject.Update();
+
             float lineHeight = EditorGUIUtility.singleLineHeight;
             float spacing = EditorGUIUtility.standardVerticalSpacing;
             float y = position.y;
@@ -37,7 +40,7 @@ namespace SGS29.Editor
                         nameProp.stringValue = null;
                         nameProp.serializedObject.ApplyModifiedProperties();
                         nameProp.serializedObject.Update();
-                        UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+                        GUIX.ForceRebuild();
                     });
                 PopulateMenu(menu, nameProp);
                 menu.ShowAsContext();

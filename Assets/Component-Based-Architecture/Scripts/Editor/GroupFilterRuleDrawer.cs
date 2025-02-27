@@ -26,6 +26,7 @@ namespace SGS29.Editor
                     {
                         nameProperty.stringValue = type.Name;
                         nameProperty.serializedObject.ApplyModifiedProperties();
+                        GUIX.ForceRebuild();
                     });
                 }
             }

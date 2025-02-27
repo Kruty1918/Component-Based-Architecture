@@ -1,6 +1,8 @@
 using UnityEditor;
 using SGS29.CBA;
 using UnityEngine;
+using System.Collections.Generic;
+using System;
 
 namespace SGS29.Editor
 {
@@ -14,18 +16,25 @@ namespace SGS29.Editor
 
         protected override void PopulateMenu(GenericMenu menu, SerializedProperty nameProperty)
         {
-            // Наприклад, для цього класу логіка отримання меню може бути іншою
-            // Ми можемо додати свої пункти меню
-            menu.AddItem(new GUIContent("CustomComponent1"), false, () =>
+            // Приклад: отримання списку через ComponentFinder
+            List<Type> componentTypes = ComponentFinder.GetComponentsImplementingAbstractHandler();
+            if (componentTypes.Count > 0)
             {
-                nameProperty.stringValue = "CustomComponent1";
-                nameProperty.serializedObject.ApplyModifiedProperties();
-            });
-            menu.AddItem(new GUIContent("CustomComponent2"), false, () =>
+                foreach (Type type in componentTypes)
+                {
+                    menu.AddItem(new GUIContent(type.Name), false, () =>
+                    {
+                        nameProperty.stringValue = type.Name;
+                        nameProperty.serializedObject.ApplyModifiedProperties();
+                        nameProperty.serializedObject.Update();
+                        GUIX.ForceRebuild();
+                    });
+                }
+            }
+            else
             {
-                nameProperty.stringValue = "CustomComponent2";
-                nameProperty.serializedObject.ApplyModifiedProperties();
-            });
+                menu.AddDisabledItem(new GUIContent("Немає доступних компонентів"));
+            }
         }
     }
 }

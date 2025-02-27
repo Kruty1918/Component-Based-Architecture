@@ -182,6 +182,16 @@ namespace SGS29.Editor
             EditorGUILayout.EndHorizontal();
         }
 
+        public static void ForceRebuild()
+        {
+            EditorApplication.delayCall += () =>
+      {
+          // Примусово перебудовуємо інспектор
+          ActiveEditorTracker.sharedTracker.ForceRebuild();
+          EditorWindow.focusedWindow?.Repaint();
+      };
+        }
+
         public static void WarningBox(Rect position, ref float y, string message)
         {
             float lineHeight = EditorGUIUtility.singleLineHeight;
