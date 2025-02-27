@@ -17,7 +17,7 @@ namespace SGS29.Editor
         protected override void PopulateMenu(GenericMenu menu, SerializedProperty nameProperty)
         {
             // Тут можна реалізувати власну логіку для груп, наприклад, отримати список з іншого джерела
-            List<Type> types = ComponentFinder.GetComponentsImplementingAbstractHandler(); // або інший метод
+            List<Type> types = TypeFinder.GetDerivedTypes(); // або інший метод
             if (types.Count > 0)
             {
                 foreach (Type type in types)

@@ -2,7 +2,6 @@ using UnityEditor;
 using SGS29.CBA;
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 
 namespace SGS29.Editor
 {
@@ -16,25 +15,44 @@ namespace SGS29.Editor
 
         protected override void PopulateMenu(GenericMenu menu, SerializedProperty nameProperty)
         {
-            // Приклад: отримання списку через ComponentFinder
-            List<Type> componentTypes = ComponentFinder.GetComponentsImplementingAbstractHandler();
-            if (componentTypes.Count > 0)
+            List<string> componentTypes = TypeFinder.GetDerivedTypeNames();
+            string controllerName = GetName(ControllerFilterRuleDrawer.CONTROLLER_NAME_KEY);
+            List<string> controllerComponents = CBAFilterManager.GetControllerComponentsPath(controllerName);
+
+            if (componentTypes.Count == 0)
             {
-                foreach (Type type in componentTypes)
+                menu.AddDisabledItem(new GUIContent("No components available"));
+                return;
+            }
+
+            if (controllerComponents == null || controllerComponents.Count == 0)
+            {
+                menu.AddDisabledItem(new GUIContent("Unidentified"));
+                return;
+            }
+
+            bool addedItem = false;
+            foreach (string type in componentTypes)
+            {
+                if (controllerComponents.Contains(type))
                 {
-                    menu.AddItem(new GUIContent(type.Name), false, () =>
-                    {
-                        nameProperty.stringValue = type.Name;
-                        nameProperty.serializedObject.ApplyModifiedProperties();
-                        nameProperty.serializedObject.Update();
-                        GUIX.ForceRebuild();
-                    });
+                    menu.AddItem(new GUIContent(type), false, () => ApplySelection(nameProperty, type));
+                    addedItem = true;
                 }
             }
-            else
+
+            if (!addedItem)
             {
-                menu.AddDisabledItem(new GUIContent("Немає доступних компонентів"));
+                menu.AddDisabledItem(new GUIContent("No objects matching the filter"));
             }
+        }
+
+        private void ApplySelection(SerializedProperty nameProperty, string value)
+        {
+            nameProperty.stringValue = value;
+            nameProperty.serializedObject.ApplyModifiedProperties();
+            nameProperty.serializedObject.Update();
+            GUIX.ForceRebuild();
         }
     }
 }

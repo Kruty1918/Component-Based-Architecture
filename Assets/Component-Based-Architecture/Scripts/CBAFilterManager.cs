@@ -9,7 +9,7 @@ namespace SGS29.CBA
         /// <summary>
         /// Отримання всіх шляхів айтемів для заданого контролера.
         /// </summary>
-        public static List<string> GetControllerItemsPath(string controllerName)
+        public static List<string> GetControllerComponentsPath(string controllerName)
         {
             var controllers = CBAReaderWriter.Read();
             var controller = controllers.FirstOrDefault(c => c.controllerName == controllerName);

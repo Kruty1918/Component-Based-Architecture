@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -5,7 +7,29 @@ namespace SGS29.Editor
 {
     public abstract class BaseFilterRuleDrawer : PropertyDrawer
     {
+        private static Dictionary<string, string> names = new();
+
+        private void Add(string name, string value)
+        {
+            if (names.ContainsKey(name))
+            {
+                names[name] = value;
+            }
+            else
+            {
+                names.Add(name, value);
+            }
+        }
+
+        protected string GetName(string priority)
+        {
+            if (names.ContainsKey(priority)) return names[priority];
+            return null;
+        }
+
+
         protected abstract string GetNameField();
+        protected virtual string GetNameKey() => GetNameField();
         protected abstract void PopulateMenu(GenericMenu menu, SerializedProperty nameProperty);
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -21,6 +45,9 @@ namespace SGS29.Editor
 
             SerializedProperty nameProp = property.FindPropertyRelative(GetNameField());
             SerializedProperty priorityProp = property.FindPropertyRelative("Priority");
+
+            if (!String.IsNullOrEmpty(nameProp.stringValue))
+                Add(GetNameKey(), nameProp.stringValue);
 
             if (nameProp == null || priorityProp == null)
             {
