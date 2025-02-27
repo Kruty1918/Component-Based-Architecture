@@ -105,10 +105,10 @@ namespace SGS29
             return false;
         }
 
-        public static List<ControllerNode> Read()
+        public static List<ControllerNode> Read(bool useCached = true)
         {
             // If data is cached, return the cached version
-            if (cachedControllers != null)
+            if (cachedControllers != null && useCached)
                 return cachedControllers;
 
             // Otherwise, read from the file and cache it

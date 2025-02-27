@@ -185,11 +185,11 @@ namespace SGS29.Editor
         public static void ForceRebuild()
         {
             EditorApplication.delayCall += () =>
-      {
-          // Примусово перебудовуємо інспектор
-          ActiveEditorTracker.sharedTracker.ForceRebuild();
-          EditorWindow.focusedWindow?.Repaint();
-      };
+          {
+              // Примусово перебудовуємо інспектор
+              ActiveEditorTracker.sharedTracker.ForceRebuild();
+              EditorWindow.focusedWindow?.Repaint();
+          };
         }
 
         public static void WarningBox(Rect position, ref float y, string message)

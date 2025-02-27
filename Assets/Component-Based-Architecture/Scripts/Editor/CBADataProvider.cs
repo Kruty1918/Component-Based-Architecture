@@ -8,7 +8,7 @@ namespace SGS29.Editor
         public List<ControllerNode> Load()
         {
             List<ControllerNode> data = new();
-            data = CBAReaderWriter.Read();
+            data = CBAReaderWriter.Read(false);
             if (data == null || data.Count == 0)
             {
                 data = new List<ControllerNode>

@@ -121,6 +121,8 @@ namespace SGS29.Editor
                 {
                     controllers = provider.Load();
                     _hasChanges = false;
+
+                    GUIX.ForceRebuild();
                 }
             }
 
