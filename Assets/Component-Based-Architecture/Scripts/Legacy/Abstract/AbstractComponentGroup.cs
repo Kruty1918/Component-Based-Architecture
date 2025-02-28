@@ -22,7 +22,7 @@ namespace SGS29.CBA
         /// Колекція компонентів, які входять до цієї групи.
         /// Це поле може бути перекрите в конкретній реалізації, щоб визначити конкретні компоненти в групі.
         /// </summary>
-        public IEnumerable<B> Components { get; }
+        public abstract List<B> Components { get; protected set; }
 
         /// <summary>
         /// Виконує обробку всіх компонентів у групі та повертає результат.
@@ -58,6 +58,44 @@ namespace SGS29.CBA
             {
                 component.SetDependencies(dependencies);
             }
+        }
+
+        public virtual void FilterBy(FilterData[] data)
+        {
+            if (data == null || data.Length == 0)
+                return;
+
+            // Створюємо словник для швидкого пошуку пріоритету за назвою
+            Dictionary<string, int> priorityMap = new();
+            foreach (var filter in data)
+            {
+                priorityMap[filter.Name] = filter.Priority;
+            }
+
+            // Фільтруємо лише ті компоненти, які є в `FilterData`
+            var sortedComponents = new List<B>();
+            foreach (var component in Components)
+            {
+                if (priorityMap.TryGetValue(component.Name, out int priority))
+                {
+                    InsertSorted(sortedComponents, component, priority, priorityMap);
+                }
+            }
+
+            // Оновлюємо колекцію компонентів у групі
+            Components = sortedComponents;
+        }
+
+        /// <summary>
+        /// Вставляє компонент у список відповідно до його пріоритету.
+        /// </summary>
+        private void InsertSorted(List<B> list, B component, int priority, Dictionary<string, int> priorityMap)
+        {
+            int index = list.FindIndex(c => priorityMap[c.Name] > priority);
+            if (index == -1)
+                list.Add(component);
+            else
+                list.Insert(index, component);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace SGS29.CBA.Example
         [Tooltip("Список компонентів, що входять до цієї групи.")]
         [SerializeField] private List<ComponentBase> components = new();
 
+        public override List<ComponentBase> Components { get => components; protected set => components = value; }
+
         public override IEnumerable<ComponentBase> GetEnumerable()
         {
             return components;

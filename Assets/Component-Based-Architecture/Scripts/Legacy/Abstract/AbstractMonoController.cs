@@ -13,6 +13,30 @@ namespace SGS29.CBA
         where B : IComponentHandler<V>
     {
         /// <summary>
+        /// 
+        /// </summary>
+        [SerializeField] private CBAFilterRule filter;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void Awake()
+        {
+            FilterBy(filter);
+            Awake();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void OnAwake() { }
+
+        protected virtual void FilterBy(CBAFilterRule filter)
+        {
+
+        }
+
+        /// <summary>
         /// Назва контролера.
         /// Використовується для ідентифікації конкретного контролера.
         /// За замовчуванням повертає ім'я класу, але може бути перекрите у нащадках.
@@ -33,7 +57,6 @@ namespace SGS29.CBA
         /// Перелік груп компонентів, які контролер має обробляти.
         /// </returns>
         protected abstract IEnumerable<IComponentGroup<B, V>> GetGroups();
-
         /// <summary>
         /// Встановлює залежності для всіх груп компонентів, якими керує цей контролер.
         /// Цей метод ітерує через всі групи і передає їм загальний набір залежностей.

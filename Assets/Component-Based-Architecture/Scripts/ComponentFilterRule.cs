@@ -7,5 +7,10 @@ namespace SGS29.CBA
     {
         public string ComponentName;
         public int Priority;
+
+        public static explicit operator FilterData(ComponentFilterRule v)
+        {
+            return new FilterData() { Name = v.ComponentName, Priority = v.Priority };
+        }
     }
 }

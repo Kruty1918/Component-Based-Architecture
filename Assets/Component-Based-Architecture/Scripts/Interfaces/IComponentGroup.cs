@@ -11,14 +11,14 @@ namespace SGS29.CBA
     /// Це компоненти, які обробляють значення типу <typeparamref name="V"/>.</typeparam>
     /// <typeparam name="V">Тип значення, що обробляється компонентами. Це може бути будь-який тип даних, 
     /// зокрема числові значення, вектори, або інші об'єкти, що використовуються компонентами для обробки.</typeparam>
-    public interface IComponentGroup<B, V> : INamed, IHandling<V> where B : IComponentHandler<V>
+    public interface IComponentGroup<B, V> : IFilterCollection, IHandling<V> where B : IComponentHandler<V>
     {
         /// <summary>
         /// Колекція компонентів, які входять до цієї групи.
         /// Кожен компонент обробляє певний тип даних <typeparamref name="V"/>.
         /// Цей список компонентів можна використовувати для централізованої обробки та взаємодії з ними.
         /// </summary>
-        IEnumerable<B> Components { get; }
+        List<B> Components { get; }
 
         /// <summary>
         /// Ініціалізація залежностей для компонентів групи.

@@ -1,10 +1,10 @@
 {
     "controllers": [
         {
-            "controllerName": "MainController",
+            "controllerName": "PlayerController",
             "groups": [
                 {
-                    "groupName": "Group 1",
+                    "groupName": "GroupBase",
                     "components": [
                         {
                             "componentName": "ComponentBase"
@@ -12,7 +12,7 @@
                     ]
                 },
                 {
-                    "groupName": "New Group 1",
+                    "groupName": "GfBase",
                     "components": []
                 }
             ]

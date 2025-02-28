@@ -8,17 +8,19 @@ namespace SGS29.CBA.Example
     /// </summary>
     public class PlayerController : AbstractMonoController<ComponentBase, Vector2>
     {
-        [SerializeReference] private ComponentTypeFilter filter;
 
         [SerializeField, Tooltip("Список груп компонентів, які взаємодіють із контролером")]
-        private List<GroupBase> _componentGroups;
-        private List<GroupBase> filterComponentGroups;
+        private List<AbstractComponentGroup<ComponentBase, Vector2>> _componentGroups;
 
         /// <summary>
         /// Поточна швидкість гравця.
         /// </summary>
         public Vector2 Velocity { get; private set; }
 
+        protected override void FilterBy(CBAFilterRule filter)
+        {
+            filter.FilterBy(_componentGroups[0]);
+        }
 
         private void FixedUpdate()
         {
@@ -48,7 +50,7 @@ namespace SGS29.CBA.Example
 
         protected override IEnumerable<IComponentGroup<ComponentBase, Vector2>> GetGroups()
         {
-            return filterComponentGroups;
+            return _componentGroups;
         }
     }
 }

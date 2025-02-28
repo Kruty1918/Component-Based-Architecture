@@ -1,3 +1,5 @@
+using System;
+
 namespace SGS29.CBA
 {
     /// <summary>
@@ -13,5 +15,16 @@ namespace SGS29.CBA
         /// Ім'я можна використовувати для фільтрування або сортування об'єктів у колекціях.
         /// </summary>
         string Name { get; }
+    }
+
+    public interface IFilterCollection : INamed
+    {
+        void FilterBy(FilterData[] data);
+    }
+
+    public class FilterData
+    {
+        public string Name;
+        public int Priority;
     }
 }
